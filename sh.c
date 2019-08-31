@@ -81,18 +81,23 @@ runcmd(struct cmd *cmd)
 
     execv(path, ecmd->argv);
 
-    fprintf(stderr, "exec nao implementado\n");
+    fprintf(stderr, "Comando inválido.\n");
 
     break;
 
   case '>':
   case '<':
     rcmd = (struct redircmd*)cmd;
-    /* MARK START task3
-     * TAREFA3: Implemente codigo abaixo para executar
-     * comando com redirecionamento. */
-    fprintf(stderr, "redir nao implementado\n");
-    /* MARK END task3 */
+
+    close(rcmd->fd);
+
+    int f;
+    //open file with mode 0777 for permission
+    f = open(rcmd->file, rcmd->mode, 0777);
+
+    if(f < 0)
+        fprintf(stderr, "Erro ao abrir arquivo.\n");
+
     runcmd(rcmd->cmd);
     break;
 
