@@ -81,6 +81,14 @@ runcmd(struct cmd *cmd)
 
     execv(path, ecmd->argv);
 
+    char path2[50];
+
+    strcpy(path2, "/usr/bin/");
+
+    strcat(path2, command);
+
+    execv(path2, ecmd->argv);
+
     fprintf(stderr, "Comando inválido.\n");
 
     break;
@@ -103,13 +111,40 @@ runcmd(struct cmd *cmd)
 
   case '|':
     pcmd = (struct pipecmd*)cmd;
-    /* MARK START task4
-     * TAREFA4: Implemente codigo abaixo para executar
-     * comando com pipes. */
-    fprintf(stderr, "pipe nao implementado\n");
-    /* MARK END task4 */
+
+    int aux = pipe(p);
+    fprintf(stderr, "%d\n", aux);
+
+    if(aux < 0)
+      fprintf(stderr, "Erro no pipe.");
+
+    int aux_f = fork1();
+    fprintf(stderr, "a1 %d", aux_f);
+
+    if(fork1() == 0){
+      close(1);
+      dup(p[1]);
+      close(p[0]);
+      close(p[1]);
+      runcmd(pcmd->left);
+    }
+    if(fork1() == 0){
+      close(0);
+      dup(p[0]);
+      close(p[0]);
+      close(p[1]);
+      runcmd(pcmd->right);
+    }
+    close(p[0]);
+    close(p[1]);
+
+    fprintf(stderr, "%d %d\n", pcmd->left->type, pcmd->right->type);
+    wait(NULL);
+    wait(NULL);
+
     break;
-  }    
+  }
+
   exit(0);
 }
 
