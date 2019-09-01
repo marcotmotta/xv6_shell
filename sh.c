@@ -54,7 +54,7 @@ struct cmd *parsecmd(char*); // Processar o linha de comando.
 void
 runcmd(struct cmd *cmd)
 {
-  int p[2], r;
+  int p[2];
   struct execcmd *ecmd;
   struct pipecmd *pcmd;
   struct redircmd *rcmd;
@@ -113,32 +113,29 @@ runcmd(struct cmd *cmd)
     pcmd = (struct pipecmd*)cmd;
 
     int aux = pipe(p);
-    fprintf(stderr, "%d\n", aux);
 
     if(aux < 0)
       fprintf(stderr, "Erro no pipe.");
 
-    int aux_f = fork1();
-    fprintf(stderr, "a1 %d", aux_f);
+    int p_fork = fork1();
 
-    if(fork1() == 0){
+    if(p_fork == 0){
       close(1);
-      dup(p[1]);
+      dup(p[1]); //copy file descriptor
       close(p[0]);
       close(p[1]);
       runcmd(pcmd->left);
-    }
-    if(fork1() == 0){
+    } else {
       close(0);
-      dup(p[0]);
+      dup(p[0]); //copy file descriptor
       close(p[0]);
       close(p[1]);
       runcmd(pcmd->right);
     }
+
     close(p[0]);
     close(p[1]);
 
-    fprintf(stderr, "%d %d\n", pcmd->left->type, pcmd->right->type);
     wait(NULL);
     wait(NULL);
 
