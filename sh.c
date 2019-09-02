@@ -136,9 +136,6 @@ runcmd(struct cmd *cmd)
     close(p[0]);
     close(p[1]);
 
-    wait(NULL);
-    wait(NULL);
-
     break;
   }
 
