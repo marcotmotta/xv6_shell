@@ -71,7 +71,7 @@ runcmd(struct cmd *cmd)
     ecmd = (struct execcmd*)cmd;
     if(ecmd->argv[0] == 0)
       exit(0);
-    
+
     char path[50], command[50];
 
     strcpy(path, "/bin/");
